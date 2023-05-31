@@ -32,7 +32,7 @@ public class RecruiterController {
 	
 	//Rajesh's code
 	
-	
+	////////////////////////////////////////////
 	// To check whether the Recruiter exists or not, if exists updates his details, If not create a new recruiter
 	
 	@PutMapping("/updateprofile")
@@ -81,7 +81,7 @@ public class RecruiterController {
 	// To Get Recruiter details by his Id
 	
 		@GetMapping("/getbyid/{id}")
-		public ResponseEntity<RecruiterDetails> getRecruiterById(@PathVariable int id){
+		public ResponseEntity<RecruiterDetails> getRecruiterById(@PathVariable long id){
 			
 			
 			RecruiterDetails recruiterDetails=recruiterService.getRecruiterById(id);
