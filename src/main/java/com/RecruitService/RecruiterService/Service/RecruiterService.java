@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.RecruitService.RecruiterService.Entity.RecruiterDetails;
+import com.RecruitService.RecruiterService.Exception.CustomException;
 import com.RecruitService.RecruiterService.Model.SignInDetailsRequest;
 import com.RecruitService.RecruiterService.Repository.RecruiterRepo;
 
@@ -184,7 +185,12 @@ public RecruiterDetails getRecruiterByUserName(String userName) {
 	// TODO Auto-generated method stub
 	log.info("user name"+userName);
 	
-	return recruiterRepo.findByUserName(userName);
+	 RecruiterDetails recruiterDetails =recruiterRepo.findByUserName(userName);
+	 if(Objects.isNull(recruiterDetails)) {
+		 
+		 throw new CustomException("Recruiter not found with name :"+userName, "NOT_FOUND", 404);
+	 }
+	 return recruiterDetails;
 }
 
 
@@ -192,7 +198,7 @@ public RecruiterDetails getRecruiterByUserName(String userName) {
 public RecruiterDetails getRecruiterById(long id) {
 	// TODO Auto-generated method stub
 	
-	RecruiterDetails recruiterDetails= recruiterRepo.findByRecruiterId(id);
+	RecruiterDetails recruiterDetails= recruiterRepo.findById(id).orElseThrow(()->new CustomException("Recruiter not found with Id: "+id,"NOT_FOUND",404));
 	return recruiterDetails;
 }
 
@@ -200,6 +206,11 @@ public RecruiterDetails getRecruiterById(long id) {
 
 public void deleteUserByUserName(String userName) {
 	// TODO Auto-generated method stub
+	 RecruiterDetails recruiterDetails =recruiterRepo.findByUserName(userName);
+	 if(Objects.isNull(recruiterDetails)) {
+		 
+		 throw new CustomException("Recruiter not found with name :"+userName, "NOT_FOUND", 404);
+	 }
 	recruiterRepo.deleteByUserName(userName);
 	
 }
