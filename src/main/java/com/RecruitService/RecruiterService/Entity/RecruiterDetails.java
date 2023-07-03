@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 public class RecruiterDetails {
 	
 	@Id
-	//@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	long recruiterId;
-	String userName;
+	String username;
 	String firstName;
 	String lastName;
 	String email;

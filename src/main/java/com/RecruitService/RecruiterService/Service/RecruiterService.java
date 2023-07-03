@@ -1,15 +1,24 @@
 package com.RecruitService.RecruiterService.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+/*import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;*/
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.RecruitService.RecruiterService.JwtUtils;
 import com.RecruitService.RecruiterService.Entity.RecruiterDetails;
 import com.RecruitService.RecruiterService.Exception.CustomException;
+import com.RecruitService.RecruiterService.Model.RecruiterSignupResponse;
 import com.RecruitService.RecruiterService.Model.SignInDetailsRequest;
+import com.RecruitService.RecruiterService.Model.UserInfoResponse;
 import com.RecruitService.RecruiterService.Repository.RecruiterRepo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,15 +29,23 @@ public class RecruiterService {
 	
 	@Autowired
 	RecruiterRepo recruiterRepo;
-	
-	
+	@Autowired
+	JwtUtils jwtUtils;
+	//@Autowired
+	//AuthenticationManager authenticationManager;
 	@Autowired
 	PasswordEncoder passwordEncoder;
 	
-	public String createNewRecruiter(RecruiterDetails rd) {
+	public RecruiterSignupResponse createNewRecruiter(RecruiterDetails rd) {
 		
-		recruiterRepo.save(rd);
-		return "Successfully Inserted";
+		RecruiterDetails recruiterDetails=recruiterRepo.findByUsername(rd.getUsername());
+		if(!Objects.isNull(recruiterDetails)) {	 
+			throw new CustomException("Try with other username", "", 500);
+		}
+		
+		rd.setPassword(passwordEncoder.encode(rd.getPassword()));
+		RecruiterDetails obj=recruiterRepo.save(rd);
+		return new RecruiterSignupResponse(obj.getRecruiterId(),"Recruiter successfully registered");
 	}
 	public RecruiterDetails getRecruiterDetails(long id) {
 		return recruiterRepo.findById(id).get();
@@ -57,7 +74,7 @@ public class RecruiterService {
 	
 	// To check the recruiter whether he exists or not, if exists then update the details, If not just save the new details
 	
-public void signupDetails(RecruiterDetails recruiterDetails) {
+/*public void signupDetails(RecruiterDetails recruiterDetails) {
 		
 		
 		
@@ -142,10 +159,10 @@ public void signupDetails(RecruiterDetails recruiterDetails) {
 		//repo.save(null)
 	}
 		
-	}
-public String signInDetails(SignInDetailsRequest signInDetailsRequest) {
-		String message="";
-		RecruiterDetails recruiterSigninDetails = recruiterRepo.findByEmail(signInDetailsRequest.getEmail());
+	}*/
+public ResponseEntity<UserInfoResponse> signInDetails(SignInDetailsRequest signInDetailsRequest) {
+		//String message="";
+		RecruiterDetails recruiterSigninDetails = recruiterRepo.findByUsername(signInDetailsRequest.getUsername());
 		if (recruiterSigninDetails!= null) 
 		{
 		 String password = signInDetailsRequest.getPassword();
@@ -153,26 +170,45 @@ public String signInDetails(SignInDetailsRequest signInDetailsRequest) {
          Boolean isPwdRight = passwordEncoder.matches(password, encodedPassword);
         if (isPwdRight) 
         {
-        	
-        	
-		    message="Login Success";
-		    return message;
+        	String jwtToken = jwtUtils.generateTokenFromUsername(signInDetailsRequest.getUsername());
+        	return ResponseEntity.ok()//.header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+        			//.header(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "false")
+    		        .body(new UserInfoResponse(recruiterSigninDetails.getRecruiterId(),
+    		        							recruiterSigninDetails.getUsername(),
+    		        							recruiterSigninDetails.getEmail(),
+    		        							jwtToken,
+    		        							Arrays.asList("ROLE_RECRUITER")
+    		                                   ));
+		    
 
 		} else 
 		{
-			message = "Login Failed";
-			return message;
+			throw new CustomException("Invalid Credentials", "", 500);
 	     }
 
 		}
 		else {
-            message="Email not exits";
-            return message;
+			throw new CustomException("Username not found.Please Register!", "", 500);
         }
 		
 	}
+	/*public String signInDetails(SignInDetailsRequest signInDetailsRequest) {
+		
+		Authentication authentication = authenticationManager
+		        .authenticate(new UsernamePasswordAuthenticationToken(signInDetailsRequest.getUserName(), signInDetailsRequest.getPassword()));
 
+		    SecurityContextHolder.getContext().setAuthentication(authentication);
 
+		    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+		    ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+		    
+		    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+		        .body(new UserInfoResponse(userDetails.getId(),
+		                                   userDetails.getUsername(),
+		                                   userDetails.getEmail()
+		                                   ));
+	}*/
 
 
 public List<RecruiterDetails> allDetails() {
@@ -185,7 +221,7 @@ public RecruiterDetails getRecruiterByUserName(String userName) {
 	// TODO Auto-generated method stub
 	log.info("user name"+userName);
 	
-	 RecruiterDetails recruiterDetails =recruiterRepo.findByUserName(userName);
+	 RecruiterDetails recruiterDetails =recruiterRepo.findByUsername(userName);
 	 if(Objects.isNull(recruiterDetails)) {
 		 
 		 throw new CustomException("Recruiter not found with name :"+userName, "NOT_FOUND", 404);
@@ -206,12 +242,12 @@ public RecruiterDetails getRecruiterById(long id) {
 
 public void deleteUserByUserName(String userName) {
 	// TODO Auto-generated method stub
-	 RecruiterDetails recruiterDetails =recruiterRepo.findByUserName(userName);
+	 RecruiterDetails recruiterDetails =recruiterRepo.findByUsername(userName);
 	 if(Objects.isNull(recruiterDetails)) {
 		 
 		 throw new CustomException("Recruiter not found with name :"+userName, "NOT_FOUND", 404);
 	 }
-	recruiterRepo.deleteByUserName(userName);
+	recruiterRepo.deleteByUsername(userName);
 	
 }
 

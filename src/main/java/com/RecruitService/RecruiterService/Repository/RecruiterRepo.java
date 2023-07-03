@@ -13,12 +13,12 @@ public interface RecruiterRepo extends JpaRepository<RecruiterDetails,Long>{
 	
 	
 	@Transactional
-	RecruiterDetails findByUserName(String userNameName);
+	RecruiterDetails findByUsername(String username);
 	@Transactional
 	RecruiterDetails findByEmail(String email);
     
 	@Transactional
-	void deleteByUserName(String userName);
+	void deleteByUsername(String username);
 
     @Transactional
     RecruiterDetails findByRecruiterId(long id);

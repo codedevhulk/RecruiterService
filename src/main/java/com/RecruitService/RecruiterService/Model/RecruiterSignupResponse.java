@@ -1,5 +1,6 @@
 package com.RecruitService.RecruiterService.Model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,11 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
-public class SignInDetailsRequest {
-
-
-
-	String username;
-	String password;
+public class RecruiterSignupResponse {
+	
+		long jobSeekerId;
+		String message;
+	
 }
