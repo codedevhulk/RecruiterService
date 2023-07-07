@@ -1,5 +1,7 @@
+
 spring:
-  cloud:
-    config:
-      uri: http://CONFIG-SERVER
+  config:
+    import: configserver:http://localhost:7674
     
+  zipkin:
+    base-url: http://127.0.0.1:9411/

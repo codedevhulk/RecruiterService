@@ -17,111 +17,82 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class RecruiterService {
-	
+
 	@Autowired
 	RecruiterRepo recruiterRepo;
-	
-	
+
 	@Autowired
 	PasswordEncoder passwordEncoder;
-	
+
 	public String createNewRecruiter(RecruiterDetails rd) {
-		
+
 		recruiterRepo.save(rd);
 		return "Successfully Inserted";
 	}
+
 	public RecruiterDetails getRecruiterDetails(long id) {
 		return recruiterRepo.findById(id).get();
 	}
+
 	public RecruiterDetails updateRecruiterDetails(RecruiterDetails rd) {
-		
+
 		return recruiterRepo.save(rd);
 	}
-	/*public boolean deleteRecruiterDetails(int id) {
-		rrepo.deleteById(id);
-		return null;
-	}*/
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/*
+	 * public boolean deleteRecruiterDetails(int id) { rrepo.deleteById(id); return
+	 * null; }
+	 */
+
 	// Rajesh
-	
-	
-	
-	// To check the recruiter whether he exists or not, if exists then update the details, If not just save the new details
-	
-public void signupDetails(RecruiterDetails recruiterDetails) {
-		
-		
-		
-		
-	RecruiterDetails existingRecruiterDetails=recruiterRepo.findByUserName(recruiterDetails.getUserName());
-		
-		//log.info(jobSeekerDetails.toString());
-		
-		//updating the Jobseekerdetails
-		
-		
-		if(Objects.nonNull(existingRecruiterDetails)) {
-			
-			
-			
-			if(Objects.nonNull(recruiterDetails.getRecruiterId())) {
-				
-				
-				
+
+	// To check the recruiter whether he exists or not, if exists then update the
+	// details, If not just save the new details
+
+	public void signupDetails(RecruiterDetails recruiterDetails) {
+
+		RecruiterDetails existingRecruiterDetails = recruiterRepo.findByUserName(recruiterDetails.getUserName());
+
+		// log.info(jobSeekerDetails.toString());
+
+		// updating the Jobseekerdetails
+
+		if (Objects.nonNull(existingRecruiterDetails)) {
+
+			if (Objects.nonNull(recruiterDetails.getRecruiterId())) {
+
 				existingRecruiterDetails.setRecruiterId(recruiterDetails.getRecruiterId());
 			}
-			
-			
-			
-			
-			if(Objects.nonNull(recruiterDetails.getFirstName())) {
+
+			if (Objects.nonNull(recruiterDetails.getFirstName())) {
 				existingRecruiterDetails.setFirstName(recruiterDetails.getFirstName());
 			}
-			if(Objects.nonNull(recruiterDetails.getLastName())) {
+			if (Objects.nonNull(recruiterDetails.getLastName())) {
 				existingRecruiterDetails.setLastName(recruiterDetails.getLastName());
 			}
-			if(Objects.nonNull(recruiterDetails.getUserName())) {
+			if (Objects.nonNull(recruiterDetails.getUserName())) {
 				existingRecruiterDetails.setUserName(recruiterDetails.getUserName());
 			}
-			if(Objects.nonNull(recruiterDetails.getMobileNumber())) {
+			if (Objects.nonNull(recruiterDetails.getMobileNumber())) {
 				existingRecruiterDetails.setMobileNumber(recruiterDetails.getMobileNumber());
 			}
-			if(Objects.nonNull(recruiterDetails.getEmail())) {
+			if (Objects.nonNull(recruiterDetails.getEmail())) {
 				existingRecruiterDetails.setEmail(recruiterDetails.getEmail());
 			}
-			if(Objects.nonNull(recruiterDetails.getAddress())) {
+			if (Objects.nonNull(recruiterDetails.getAddress())) {
 				existingRecruiterDetails.setAddress(recruiterDetails.getAddress());
 			}
-			
-			
-			
-			
-			
-			
-			
-			
+
 			recruiterRepo.save(existingRecruiterDetails);
 			log.info(existingRecruiterDetails.toString());
-			
+
 		}
-		
-		
-		
+
 		// User does not exist so continuing with creating a new user
-		
+
 		else {
-		
-		
-		//String encryptedPassword = passwordEncoder.encode(jobSeekerDetailsRequest.getPassword());
+
+			// String encryptedPassword =
+			// passwordEncoder.encode(jobSeekerDetailsRequest.getPassword());
 //		JobSeekerDetails details =  JobSeekerDetails.builder()
 //				.firstName(jobSeekerDetailsRequest.getFirstName())
 //				.lastName(jobSeekerDetailsRequest.getLastName())
@@ -135,84 +106,72 @@ public void signupDetails(RecruiterDetails recruiterDetails) {
 //				.address(jobSeekerDetailsRequest.getAddress())
 //				.build();
 //		repo.save(details);
-		//jobSeekerDetailsRequest.setPassword(encryptedPassword);
-		recruiterRepo.save(recruiterDetails);
-		
-		log.info(recruiterDetails.toString());
-		//repo.save(null)
-	}
-		
-	}
-public String signInDetails(SignInDetailsRequest signInDetailsRequest) {
-		String message="";
-		RecruiterDetails recruiterSigninDetails = recruiterRepo.findByEmail(signInDetailsRequest.getEmail());
-		if (recruiterSigninDetails!= null) 
-		{
-		 String password = signInDetailsRequest.getPassword();
-		 String encodedPassword = recruiterSigninDetails.getPassword();
-         Boolean isPwdRight = passwordEncoder.matches(password, encodedPassword);
-        if (isPwdRight) 
-        {
-        	
-        	
-		    message="Login Success";
-		    return message;
+			// jobSeekerDetailsRequest.setPassword(encryptedPassword);
+			recruiterRepo.save(recruiterDetails);
 
-		} else 
-		{
-			message = "Login Failed";
-			return message;
-	     }
-
+			log.info(recruiterDetails.toString());
+			// repo.save(null)
 		}
-		else {
-            message="Email not exits";
-            return message;
-        }
-		
+
 	}
 
+	public String signInDetails(SignInDetailsRequest signInDetailsRequest) {
+		String message = "";
+		RecruiterDetails recruiterSigninDetails = recruiterRepo.findByEmail(signInDetailsRequest.getEmail());
+		if (recruiterSigninDetails != null) {
+			String password = signInDetailsRequest.getPassword();
+			String encodedPassword = recruiterSigninDetails.getPassword();
+			Boolean isPwdRight = passwordEncoder.matches(password, encodedPassword);
+			if (isPwdRight) {
 
+				message = "Login Success";
+				return message;
 
+			} else {
+				message = "Login Failed";
+				return message;
+			}
 
-public List<RecruiterDetails> allDetails() {
+		} else {
+			message = "Email not exits";
+			return message;
+		}
+
+	}
+
+	public List<RecruiterDetails> allDetails() {
 		return recruiterRepo.findAll();
 	}
-	
 
+	public RecruiterDetails getRecruiterByUserName(String userName) {
+		// TODO Auto-generated method stub
+		log.info("user name" + userName);
 
-public RecruiterDetails getRecruiterByUserName(String userName) {
-	// TODO Auto-generated method stub
-	log.info("user name"+userName);
-	
-	 RecruiterDetails recruiterDetails =recruiterRepo.findByUserName(userName);
-	 if(Objects.isNull(recruiterDetails)) {
-		 
-		 throw new CustomException("Recruiter not found with name :"+userName, "NOT_FOUND", 404);
-	 }
-	 return recruiterDetails;
-}
+		RecruiterDetails recruiterDetails = recruiterRepo.findByUserName(userName);
+		if (Objects.isNull(recruiterDetails)) {
 
+			throw new CustomException("Recruiter not found with name :" + userName, "NOT_FOUND", 404);
+		}
+		return recruiterDetails;
+	}
 
+	public RecruiterDetails getRecruiterById(long id) {
+		// TODO Auto-generated method stub
 
-public RecruiterDetails getRecruiterById(long id) {
-	// TODO Auto-generated method stub
-	
-	RecruiterDetails recruiterDetails= recruiterRepo.findById(id).orElseThrow(()->new CustomException("Recruiter not found with Id: "+id,"NOT_FOUND",404));
-	return recruiterDetails;
-}
+		RecruiterDetails recruiterDetails = recruiterRepo.findById(id)
+				.orElseThrow(() -> new CustomException("Recruiter not found with Id: " + id, "NOT_FOUND", 404));
+		return recruiterDetails;
+	}
 
+	public void deleteUserByUserName(String userName) {
+		// TODO Auto-generated method stub
+		RecruiterDetails recruiterDetails = recruiterRepo.findByUserName(userName);
+		if (Objects.isNull(recruiterDetails)) {
 
+			throw new CustomException("Recruiter not found with name :" + userName, "NOT_FOUND", 404);
+		}
+		recruiterRepo.deleteByUserName(userName);
 
-public void deleteUserByUserName(String userName) {
-	// TODO Auto-generated method stub
-	 RecruiterDetails recruiterDetails =recruiterRepo.findByUserName(userName);
-	 if(Objects.isNull(recruiterDetails)) {
-		 
-		 throw new CustomException("Recruiter not found with name :"+userName, "NOT_FOUND", 404);
-	 }
-	recruiterRepo.deleteByUserName(userName);
-	
-}
+	}
 
 }
